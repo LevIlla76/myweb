@@ -290,6 +290,8 @@ function createHeart() {
          document.addEventListener("DOMContentLoaded", function() {
             const audio = document.getElementById("backgroundMusic");
 
+             audio.volume = 0.2;
+
             // พยายามเล่นเพลงอัตโนมัติ
             audio.play().catch(error => {
                 console.log("Autoplay prevented, waiting for user interaction.");

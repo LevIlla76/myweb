@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Letter Animation</title>
+    <link rel="stylesheet" href="css.css">
+    <style>
+        body, html {
+            padding: 0;
+            margin: 0;
+            background-color: #f7d9da;
+            text-align: center;
+        }
+        body {
+            background-color: #f7d9da00;
+            text-align: center;
+        }
+
+        /* สร้างการเคลื่อนไหวของหัวใจ */
+        @keyframes heartFall {
+            0% {
+                opacity: 1;
+                transform: translateY(50) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .heart-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart-background .heart {
+            position: fixed; /* ใช้ fixed เพื่อให้หัวใจไม่ส่งผลกระทบกับส่วนอื่นของหน้า */
+    font-size: 120px;
+    color: rgba(255, 0, 0, 0.485);
+    top: -100px;
+    left: 50%;
+    animation: heartFall 10s infinite ease-in;
+    opacity: 1;
+    z-index: 1000; /* ทำให้หัวใจอยู่เหนือส่วนอื่นๆ ของหน้า */
+        }
+
+        .heart-icon {
+            font-size: 1.8rem;
+        }
+
+        .envelope-wrapper {
+            height: 380px;
+        }
+
+        #envelope {
+    position: relative;
+    top: 50%;  /* วางซองจดหมายอยู่กลางแนวตั้ง */
+    width: 280px;
+    height: 180px;
+    margin: 150px auto;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background-color: #f9c5c8;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(0); /* เพิ่มให้ตำแหน่งเริ่มต้นของซองอยู่คงที่ */
+}
+
+        .flap {
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-bottom: 82px solid transparent;
+            border-top: 98px solid #ff3333;
+            transform-origin: top;
+            pointer-events: none;
+        }
+
+        .pocket {
+            border-left: 140px solid #ff9999;
+            border-right: 140px solid #ff9999;
+            border-bottom: 90px solid #fd8787;
+            border-top: 90px solid transparent;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+
+        .letter-wrapper {
+            display: none; /* ซ่อนจดหมายของ Letter2 ไว้ก่อน */
+            max-width: 630px;
+            margin: 20px auto;
+            padding: 2em;
+            background-color: rgba(232, 133, 135, .5);
+            border-radius: 1em;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cursive {
+            font-family: 'Dancing Script';
+            font-size: 1.5em;
+            color: #ff5757;
+        }
+
+        
+
+        .letter .writer {
+            font-family: 'Dancing Script';
+            margin-top: 1em;
+            color: #ff5757;
+            font-size: 1.25em;
+        }
+        
+
+        .fade-in-letter {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            max-width: 80%; /* กำหนดความกว้างสูงสุด */
+    margin: 0 auto; /* ทำให้จดหมายอยู่กลางหน้า */
+    padding: 20px; /* เพิ่มระยะห่างจากขอบ */
+    text-align: left;
+        }
+
+        .fade-in-letter.active {
+            opacity: 1;
+        }
+
+        .letter {
+            position: relative;
+            background-color: #f9c5c8;
+            width: 90%;
+            margin: auto;
+            height: 90%;
+            top: 5%;
+            border-radius: 6px;
+            box-shadow: 0 2px 26px rgba(0, 0, 0, 0.12);
+            transition: transform 0.4s ease;
+            cursor: pointer;
+        }
+
+        .letter:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 55%, #eed7ef00 100%);
+        }
+
+        .words {
+            position: absolute;
+            left: 10%;
+            width: 80%;
+            height: 14%;
+            background-color: #fdb7ba;
+        }
+
+        .words.line1 { top: 15%; width: 20%; height: 7%; }
+        .words.line2 { top: 30%; }
+        .words.line3 { top: 50%; }
+        .words.line4 { top: 70%; }
+
+        .open .flap {
+            transform: rotateX(180deg);
+            transition: transform 0.4s ease, z-index 0.6s;
+            z-index: 1;
+        }
+
+        .close .flap {
+            transform: rotateX(0deg);
+            transition: transform 0.4s 0.6s ease, z-index 1s;
+            z-index: 5;
+        }
+
+        .close .letter {
+            transform: translateY(0px);
+            transition: transform 0.4s ease, z-index 1s;
+            z-index: 1;
+        }
+
+        .open .letter {
+            transform: translateY(-60px);
+            transition: transform 0.4s 0.6s ease, z-index 0.6s;
+            z-index: 2;
+        }
+
+        .letter.zoomed {
+            transform: translateY(-100px) scale(1.5);
+            transition: transform 0.4s ease;
+        }
+
+        .reset {
+            text-align: center;
+        }
+
+        #reset {
+    display: none;
+}
+
+
+        .reset button {
+            background-color: transparent;
+            border: solid 2px #ff5757;
+            border-radius: 4px;
+            color: #ff5757;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .reset button:hover {
+            background-color: #fc9d9d;
+            color: #a10000;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="/assets/myflower.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="heart-background" id="heart-background">
+        <!-- หัวใจจะถูกเพิ่มที่นี่ -->
+    </div>
+
+<div class="envelope-wrapper">
+    <div id="envelope" class="close">
+        <div class="front flap"></div>
+        <div class="front pocket"></div>
+        <div class="letter" id="open-letter">
+            <div class="words line1"></div>
+            <div class="words line2"></div>
+            <div class="words line3"></div>
+            <div class="words line4"></div>
+        </div>
+        <div class="hearts">
+            <div class="heart a1"></div>
+            <div class="heart a2"></div>
+            <div class="heart a3"></div>
+        </div>
+    </div>
+</div>
+
+<!-- จดหมายจาก Letter2 -->
+<div class="letter-wrapper">
+    <div class="letter fade-in-letter">
+        <p class="cursive address">Dear My Love,</p>
+          <p class="body">Valentine's Day is the perfect time to remind you how much you mean to me. 
+            Every day with you feels like a new and wonderful part of my life. 
+            Your love brings so much joy and peace to my heart. </p>
+          <p class="body">I'm amazed by how you make even the smallest moments feel special. 
+            I'm so thankful for your kindness, patience, and constant support. 
+            You make every day brighter, and I can't imagine my life without you. 
+            On this special day, I want you to know that my love for you will never end, 
+            and I'm forever grateful for you. </p>
+          <p class="writer cursive">Happy Valentine's Day to the one who holds my heart.</p>
+    </div>
+</div>
+
+<div class="reset">
+    <button id="reset">Close</button>
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+
+const audio = document.getElementById("backgroundMusic");
+
+// ฟังก์ชันในการบันทึกตำแหน่งปัจจุบันของเพลง
+function saveCurrentTime() {
+    localStorage.setItem("audioTime", audio.currentTime);
+}
+
+// ฟังก์ชันเพื่อเริ่มเล่นเพลงจากตำแหน่งที่บันทึกไว้
+function loadAudioTime() {
+    const savedTime = localStorage.getItem("audioTime");
+    if (savedTime) {
+        audio.currentTime = savedTime;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    loadAudioTime(); // โหลดตำแหน่งเพลงเมื่อหน้าโหลด
+
+    // พยายามเล่นเพลงอัตโนมัติ
+    audio.play().catch(error => {
+        console.log("Autoplay prevented, waiting for user interaction.");
+    });
+
+    // ถ้าถูกบล็อก ให้คลิกที่หน้าเพื่อเริ่มเล่น
+    document.body.addEventListener("click", function() {
+        if (audio.paused) {
+            audio.play();
+        }
+    }, { once: true });
+
+    // ตั้งค่าบันทึกตำแหน่งทุก 1 วินาที
+    setInterval(saveCurrentTime, 1000); // ทุก 1 วินาที
+});
+
+function randomPosition() {
+            const leftPosition = Math.random() * 120; // สุ่มตำแหน่งแนวนอน
+            return { top: '-130px', left: leftPosition + '%' }; // เริ่มจากขอบบนสุด
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            const position = randomPosition();
+            heart.style.top = position.top;
+            heart.style.left = position.left;
+            heart.style.animationDuration = `${Math.random() * 5 + 7}s`; // สุ่มระยะเวลาตก (7-12 วินาที)
+            heart.innerHTML = '&#10084;';
+            document.getElementById('heart-background').appendChild(heart);
+
+            // เมื่อหัวใจตกเสร็จแล้ว ให้สร้างหัวใจใหม่
+            heart.addEventListener('animationiteration', () => {
+                heart.remove();
+            });
+        }
+
+        // สร้างหัวใจใหม่ทุกๆ 1.5 วินาที
+        setInterval(createHeart, 1500);
+
+
+    $(document).ready(function() {
+        var envelope = $('#envelope');
+        var letter = $('.letter');
+        var btn_reset = $("#reset");
+
+        // คลิกที่ซองจดหมายเพื่อเปิด
+        envelope.click(function() {
+            openEnvelope();
+        });
+
+        btn_reset.click(function() {
+            closeEnvelope();
+        });
+
+        $("#open-letter").click(function () {
+            $("#envelope").addClass("open"); // เปิดซองจดหมาย
+            $(".letter-wrapper").fadeIn(500, function () {
+                $(".fade-in-letter").addClass("active"); // fade-in จดหมายจาก Letter2
+            });
+            $("#reset").show(); // แสดงปุ่ม "Close"
+        });
+
+        $("#reset").click(function () {
+            $("#envelope").removeClass("open"); // ปิดซองจดหมาย
+            $(".fade-in-letter").removeClass("active"); // ซ่อนจดหมาย
+            $(".letter-wrapper").fadeOut(500);
+            $("#reset").hide(); // ซ่อนปุ่ม "Close"
+        });
+
+        // คลิกที่จดหมายให้ขยายขึ้น
+        letter.click(function(event) {
+            event.stopPropagation(); // ป้องกันการเปิด-ปิดซ้อนกัน
+            
+        });
+
+        function openEnvelope() {
+            envelope.addClass("open").removeClass("close");
+        }
+
+        function closeEnvelope() {
+            envelope.addClass("close").removeClass("open");
+
+        }
+    });
+</script>
+
+</body>
+</html>

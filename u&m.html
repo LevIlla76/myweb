@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You & Me</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: pink;
+            text-align: center;
+            overflow: hidden;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+         /* สร้างการเคลื่อนไหวของหัวใจ */
+         @keyframes heartFall {
+            0% {
+                opacity: 1;
+                transform: translateY(50) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .heart-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart-background .heart {
+            position: absolute;
+            font-size: 120px;
+            color: rgba(255, 0, 0, 0.485);
+            top: -100px;
+            left: 50%;
+            animation: heartFall 10s infinite ease-in;
+            opacity: 1;
+        }
+
+        .heart-icon {
+            font-size: 1.8rem;
+        }
+
+        .heart-icon1 {
+            font-size: 1rem;
+        }
+
+        /* ปรับขนาดกรอบพื้นหลังให้กว้างขึ้น */
+        .background-frame {
+            width: 800px;
+            height: 700px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+        }
+
+        /* ข้อความด้านบน */
+        .top-text {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff6f61;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* ข้อความด้านล่าง */
+        .bottom-text {
+            font-family: 'Caveat', cursive;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff6f61;
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer; /* ทำให้ข้อความดูเหมือนปุ่ม */
+        }
+
+        /* ปรับกรอบภาพให้กว้างขึ้น */
+        .frame {
+            width: 600px;
+            height: 500px;
+            border: 5px solid #ff6f61;
+            border-radius: 25px;
+            overflow: hidden; /* ซ่อนภาพที่ออกนอกเฟรม */
+            background-color: rgba(255, 255, 255, 0.8);
+            position: relative;
+        }
+
+        .image-container {
+            position: relative; /* ใช้ relative แทน absolute */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: scrollUp 40s linear infinite; /* เลื่อนขึ้นแบบไม่ออกนอกเฟรม */
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        /* ปรับขนาดรูปให้ใหญ่ขึ้น */
+        .floating-image {
+            width: 180px;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* แอนิเมชันเลื่อนขึ้น */
+        @keyframes scrollUp {
+            0% {
+                transform: translateY(27%);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="/assets/myflower.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="heart-background" id="heart-background">
+        <!-- หัวใจจะถูกเพิ่มที่นี่ -->
+    </div>
+
+    <div class="background-frame">
+        <div class="top-text">You & Me</div>
+
+        <div class="frame">
+            <div class="image-container" id="imageContainer">
+                <!-- รูปภาพจะถูกเพิ่มที่นี่ -->
+            </div>
+        </div>
+
+        <div class="bottom-text" id="luckyText">I'm so lucky to have u</div>
+    </div>
+
+    <script>
+
+const audio = document.getElementById("backgroundMusic");
+
+// ฟังก์ชันในการบันทึกตำแหน่งปัจจุบันของเพลง
+function saveCurrentTime() {
+    localStorage.setItem("audioTime", audio.currentTime);
+}
+
+// ฟังก์ชันเพื่อเริ่มเล่นเพลงจากตำแหน่งที่บันทึกไว้
+function loadAudioTime() {
+    const savedTime = localStorage.getItem("audioTime");
+    if (savedTime) {
+        audio.currentTime = savedTime;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    loadAudioTime(); // โหลดตำแหน่งเพลงเมื่อหน้าโหลด
+
+    // พยายามเล่นเพลงอัตโนมัติ
+    audio.play().catch(error => {
+        console.log("Autoplay prevented, waiting for user interaction.");
+    });
+
+    // ถ้าถูกบล็อก ให้คลิกที่หน้าเพื่อเริ่มเล่น
+    document.body.addEventListener("click", function() {
+        if (audio.paused) {
+            audio.play();
+        }
+    }, { once: true });
+
+    // ตั้งค่าบันทึกตำแหน่งทุก 1 วินาที
+    setInterval(saveCurrentTime, 1000); // ทุก 1 วินาที
+});
+
+        // ฟังก์ชันสำหรับเปลี่ยนหน้าเมื่อคลิกข้อความ
+        document.getElementById('luckyText').addEventListener('click', () => {
+            window.location.href = 'letter2u.html';
+        });
+
+        function randomPosition() {
+            const leftPosition = Math.random() * 120; // สุ่มตำแหน่งแนวนอน
+            return { top: '-130px', left: leftPosition + '%' }; // เริ่มจากขอบบนสุด
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            const position = randomPosition();
+            heart.style.top = position.top;
+            heart.style.left = position.left;
+            heart.style.animationDuration = `${Math.random() * 5 + 7}s`; // สุ่มระยะเวลาตก (3-6 วินาที)
+            heart.innerHTML = '&#10084;';
+            document.getElementById('heart-background').appendChild(heart);
+
+            // เมื่อหัวใจตกเสร็จแล้ว ให้สร้างหัวใจใหม่
+            heart.addEventListener('animationiteration', () => {
+                heart.remove();
+            });
+        }
+
+        // สร้างหัวใจใหม่ทุกๆ 0.5 วินาที
+        setInterval(createHeart, 1500);
+
+        const images = [
+            '1.jpg', '2.jpg', '3.jpg',
+            '4.jpg', '5.jpg', '6.jpg',
+            '7.jpg', '8.png', '9.jpg',
+            '10.png', '11.png', '14.png',
+            '13.png', '15.png', '16.jpg',
+
+        ]; // เปลี่ยนเป็นรูปภาพของคุณ
+
+        function createImageRows() {
+            const container = document.getElementById('imageContainer');
+            container.innerHTML = ''; // ล้างของเก่า
+
+            for (let i = 0; i < images.length; i += 3) {
+                const row = document.createElement('div');
+                row.classList.add('row');
+
+                for (let j = 0; j < 3; j++) {
+                    if (images[i + j]) {
+                        const img = document.createElement('img');
+                        img.src = `assets/${images[i + j]}`;
+                        img.classList.add('floating-image');
+                        row.appendChild(img);
+                    }
+                }
+                container.appendChild(row);
+            }
+
+            // เพิ่มรูปชุดเดิมอีกรอบเพื่อทำให้การเลื่อนดูต่อเนื่อง
+            for (let i = 0; i < images.length; i += 3) {
+                const row = document.createElement('div');
+                row.classList.add('row');
+
+                for (let j = 0; j < 3; j++) {
+                    if (images[i + j]) {
+                        const img = document.createElement('img');
+                        img.src = `assets/${images[i + j]}`;
+                        img.classList.add('floating-image');
+                        row.appendChild(img);
+                    }
+                }
+                container.appendChild(row);
+            }
+            for (let i = 0; i < images.length; i += 3) {
+                const row = document.createElement('div');
+                row.classList.add('row');
+
+                for (let j = 0; j < 3; j++) {
+                    if (images[i + j]) {
+                        const img = document.createElement('img');
+                        img.src = `assets/${images[i + j]}`;
+                        img.classList.add('floating-image');
+                        row.appendChild(img);
+                    }
+                }
+                container.appendChild(row);
+            }
+            
+        }
+
+        createImageRows(); // เรียกครั้งแรกทันที
+    </script>
+
+</body>
+</html>

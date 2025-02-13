@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-color: pink;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            position: relative;
+            overflow: hidden; /* ป้องกันไม่ให้หน้าเว็บขยับ */
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: white;
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            position: relative;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            border: none;
+            cursor: pointer;
+        }
+        #yes {
+            background-color: red;
+            color: white;
+            border-radius: 10px;
+        }
+        #no {
+            background-color: white;
+            color: red;
+            border-radius: 10px;
+            position: fixed; /* ใช้ fixed เพื่อไม่ให้ตำแหน่งของปุ่มกระทบกับการเลื่อนหน้า */
+            transition: left 0.3s ease-in-out, top 0.3s ease-in-out; /* การขยับที่สมูท */
+        }
+    </style>
+</head>
+<body>
+    <h1>Will you be my Valentine?</h1>
+    <div class="buttons">
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
+    </div>
+    <script>
+        const noButton = document.getElementById('no');
+
+        noButton.addEventListener('mouseover', () => {
+            // หาค่าความกว้างและความสูงของหน้าจอ
+            let maxX = window.innerWidth - noButton.offsetWidth; // ขอบเขตในแนวนอน
+            let maxY = window.innerHeight - noButton.offsetHeight; // ขอบเขตในแนวตั้ง
+
+            // สุ่มตำแหน่งใหม่ในกรอบหน้าจอ
+            let moveX = Math.random() * maxX;
+            let moveY = Math.random() * maxY;
+
+            // ขยับปุ่มไปยังตำแหน่งใหม่ในกรอบหน้าจอ
+            noButton.style.left = `${moveX}px`;
+            noButton.style.top = `${moveY}px`;
+        });
+
+        // เพิ่มฟังก์ชันให้กับปุ่ม Yes
+        const yesButton = document.getElementById('yes');
+        yesButton.addEventListener('click', () => {
+            // ไปยังหน้าต่อไปเมื่อกด Yes
+            window.location.href = 'firstdate.html';
+        });
+    </script>
+</body>
+</html>
